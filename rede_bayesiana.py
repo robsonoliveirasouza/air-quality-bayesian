@@ -51,15 +51,21 @@ df["AquecimentoGlobal"] = np.random.choice([0, 1], size=len(df))
 # 3. DEFINIÇÃO DA REDE
 
 model = DiscreteBayesianNetwork([
+    # Lado esquerdo - Aquecimento Global e Temperatura
+    ('AquecimentoGlobal', 'Temperatura'),
+    ('CO2', 'AquecimentoGlobal'),
+    ('Desmatamento', 'AquecimentoGlobal'),
+    # Conexão entre os lados (Aquecimento Global afeta Poluição)
+    ('CO2', 'Poluicao'),
+    ('Desmatamento', 'Poluicao'),
+    ('Temperatura', 'Umidade'),  # Temperatura afeta Umidade
+    # Lado direito - Qualidade do Ar
     ('Trafego', 'Poluicao'),
     ('Industria', 'Poluicao'),
     ('Poluicao', 'QualidadeAr'),
     ('Vento', 'QualidadeAr'),
     ('Umidade', 'QualidadeAr'),
-    ('QualidadeAr', 'ProblemasResp'),
-    ('CO2', 'AquecimentoGlobal'),
-    ('Desmatamento', 'AquecimentoGlobal'),
-    ('Temperatura', 'AquecimentoGlobal')
+    ('QualidadeAr', 'ProblemasResp')
 ])
 
 # 4. CPDs
@@ -67,17 +73,29 @@ model = DiscreteBayesianNetwork([
 cpd_trafego = TabularCPD('Trafego', 2, [[0.6], [0.4]])
 cpd_industria = TabularCPD('Industria', 2, [[0.7], [0.3]])
 cpd_vento = TabularCPD('Vento', 2, [[0.5], [0.5]])
-cpd_umidade = TabularCPD('Umidade', 2, [[0.6], [0.4]])
+cpd_umidade = TabularCPD(
+    'Umidade', 2,
+    [[0.7, 0.4],
+     [0.3, 0.6]],
+    evidence=['Temperatura'],
+    evidence_card=[2]
+)
 cpd_co2 = TabularCPD('CO2', 2, [[0.5], [0.5]])
 cpd_desmatamento = TabularCPD('Desmatamento', 2, [[0.7], [0.3]])
-cpd_temperatura = TabularCPD('Temperatura', 2, [[0.6], [0.4]])
+cpd_temperatura = TabularCPD(
+    'Temperatura', 2,
+    [[0.7, 0.3],
+     [0.3, 0.7]],
+    evidence=['AquecimentoGlobal'],
+    evidence_card=[2]
+)
 
 cpd_poluicao = TabularCPD(
     'Poluicao', 2,
-    [[0.8, 0.5, 0.4, 0.1],
-     [0.2, 0.5, 0.6, 0.9]],
-    evidence=['Trafego', 'Industria'],
-    evidence_card=[2, 2]
+    [[0.7, 0.5, 0.4, 0.2, 0.5, 0.3, 0.2, 0.1, 0.4, 0.2, 0.15, 0.08, 0.2, 0.1, 0.05, 0.02],
+     [0.3, 0.5, 0.6, 0.8, 0.5, 0.7, 0.8, 0.9, 0.6, 0.8, 0.85, 0.92, 0.8, 0.9, 0.95, 0.98]],
+    evidence=['Trafego', 'Industria', 'CO2', 'Desmatamento'],
+    evidence_card=[2, 2, 2, 2]
 )
 
 cpd_qualidade = TabularCPD(
@@ -98,10 +116,10 @@ cpd_problemas = TabularCPD(
 
 cpd_aquecimento = TabularCPD(
     'AquecimentoGlobal', 2,
-    [[0.9, 0.7, 0.6, 0.3, 0.7, 0.5, 0.4, 0.1],
-     [0.1, 0.3, 0.4, 0.7, 0.3, 0.5, 0.6, 0.9]],
-    evidence=['CO2', 'Desmatamento', 'Temperatura'],
-    evidence_card=[2, 2, 2]
+    [[0.9, 0.7, 0.6, 0.3],
+     [0.1, 0.3, 0.4, 0.7]],
+    evidence=['CO2', 'Desmatamento'],
+    evidence_card=[2, 2]
 )
 
 # 5. ADICIONAR AO MODELO
@@ -118,8 +136,31 @@ print("\nModelo válido?", model.check_model())
 
 infer = VariableElimination(model)
 
-print("\nProbabilidade de Problemas Respiratórios dado alta poluição:")
+print("\n" + "="*60)
+print("ANÁLISES PROBABILÍSTICAS")
+print("="*60)
+
+print("\n1. Probabilidade de Problemas Respiratórios dado alta poluição:")
 print(infer.query(variables=['ProblemasResp'], evidence={'Poluicao': 1}))
+
+print("\n2. Probabilidade de Qualidade do Ar ruim dado alto trafego e indústria:")
+print(infer.query(variables=['QualidadeAr'], evidence={'Trafego': 1, 'Industria': 1}))
+
+print("\n3. Probabilidade de Aquecimento Global dado alto CO2 e Desmatamento:")
+print(infer.query(variables=['AquecimentoGlobal'], evidence={'CO2': 1, 'Desmatamento': 1}))
+
+print("\n4. Probabilidade de Temperatura elevada dado Aquecimento Global:")
+print(infer.query(variables=['Temperatura'], evidence={'AquecimentoGlobal': 1}))
+
+print("\n5. Probabilidade de Umidade alta dado Temperatura elevada:")
+print(infer.query(variables=['Umidade'], evidence={'Temperatura': 1}))
+
+print("\n6. Probabilidade de Problemas Respiratórios dado múltiplos fatores:")
+resultado = infer.query(
+    variables=['ProblemasResp'], 
+    evidence={'Poluicao': 1, 'QualidadeAr': 1, 'CO2': 1, 'Desmatamento': 1}
+)
+print(resultado)
 
 # 7. VISUALIZAÇÃO
 
@@ -140,4 +181,6 @@ nx.draw(
 )
 
 plt.title("Rede Bayesiana - Impacto Ambiental")
+plt.savefig('rede_bayesiana.png', dpi=300, bbox_inches='tight')
+print("\n✓ Rede bayesiana salva em 'rede_bayesiana.png'")
 plt.show()
