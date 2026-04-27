@@ -82,9 +82,9 @@ asma_pm25 = dados_csv[dados_csv['Name'].str.contains('Asthma emergency.*PM2.5', 
 hospitalizacoes_respiratorias = dados_csv[dados_csv['Name'].str.contains('Respiratory hospitalizations', case=False, na=False)]['Data Value'].values
 
 print("\nDados extraidos:")
-resumo_valores('Dioxido de azoto (NO2)', dioxido_azoto, 'ppb')
+resumo_valores('Dióxido de Nitrogênio (NO2)', dioxido_azoto, 'ppb')
 resumo_valores('Particulas finas (PM2.5)', particulas_finas)
-resumo_valores('Ozono (O3)', ozonio, 'ppb')
+resumo_valores('Ozônio (O3)', ozonio, 'ppb')
 resumo_valores('Trafego', trafego)
 resumo_valores('Asma relacionada a PM2.5', asma_pm25)
 resumo_valores('Hospitalizacoes respiratorias', hospitalizacoes_respiratorias)
@@ -162,11 +162,11 @@ print("\n2. Trafego alto + PM2.5 alto -> qualidade do ar?")
 resultado = inferencia.query(variables=['QualidadeDoAr'], evidence={'Trafego': 2, 'ParticulasFinas': 2})
 print(resultado)
 
-print("\n3. Dioxido de azoto alto -> hospitalizacoes?")
+print("\n3. Dióxido de Nitrogênio alto -> hospitalizacoes?")
 resultado = inferencia.query(variables=['HospitalizacoesRespiratorias'], evidence={'DioxidoAzoto': 2})
 print(resultado)
 
-print("\n4. Ozono alto -> qualidade do ar?")
+print("\n4. Ozônio alto -> qualidade do ar?")
 resultado = inferencia.query(variables=['QualidadeDoAr'], evidence={'Ozonio': 2})
 print(resultado)
 
@@ -175,7 +175,7 @@ print("CORRELACOES DESCOBERTAS (6 PRINCIPAIS)")
 print("=" * 75)
 
 print("""
-1. TRAFEGO -> DIOXIDO DE AZOTO [FORTE]
+1. TRAFEGO -> DIOXIDO DE NITROGÊNIO [FORTE]
    Veiculo eh principal fonte de NO2
    Media: 20.96 ppb (5.499 medicoes)
 
@@ -183,11 +183,11 @@ print("""
    Emissoes + desgaste de pneus
    Media: 9.36 unidades (5.499 medicoes)
 
-3. DIOXIDO DE AZOTO + PARTICULAS FINAS -> QUALIDADE DO AR [FORTE]
+3. DIOXIDO DE NITROGÊNIO + PARTICULAS FINAS -> QUALIDADE DO AR [FORTE]
    Impacto cumulativo dos poluentes
    Maior poluicao = ar mais pobre
 
-4. OZONIO -> QUALIDADE DO AR [FORTE]
+4. OZÔNIO -> QUALIDADE DO AR [FORTE]
     Poluente secundario que piora a mistura atmosferica
     Contribui para elevar o risco ambiental
 
@@ -206,16 +206,16 @@ Trafego UP -> Poluentes UP -> Qualidade DOWN -> Saude DOWN
 print(f"\n" + "-" * 75)
 print("Gerando imagem...")
 
-figura, eixo = plt.subplots(figsize=(12, 8))
+figura, eixo = plt.subplots(figsize=(14, 8.5))
 
 posicoes = {
-    'Trafego': (0, 2),
-    'DioxidoAzoto': (0.5, 1),
-    'ParticulasFinas': (3, 1),
-    'Ozonio': (5, 1),
-    'QualidadeDoAr': (2.2, 0),
-    'AsmaPm25': (0.5, -1),
-    'HospitalizacoesRespiratorias': (3.5, -1),
+    'Trafego': (-0.2, 2.2),
+    'DioxidoAzoto': (0.2, 1.0),
+    'ParticulasFinas': (3.0, 1.0),
+    'Ozonio': (5.1, 1.15),
+    'QualidadeDoAr': (2.35, -0.05),
+    'AsmaPm25': (0.15, -1.35),
+    'HospitalizacoesRespiratorias': (3.85, -1.35),
 }
 
 grafo = nx.DiGraph(modelo.edges())
@@ -230,9 +230,32 @@ cores = {
 }
 cores_nos = [cores[nome] for nome in grafo.nodes()]
 
-nx.draw_networkx_nodes(grafo, posicoes, node_color=cores_nos, node_size=3500, alpha=0.9, ax=eixo)
-nx.draw_networkx_labels(grafo, posicoes, font_size=9, font_weight='bold', ax=eixo)
-nx.draw_networkx_edges(grafo, posicoes, edge_color='#555555', arrows=True, arrowsize=20, width=2, ax=eixo)
+nx.draw_networkx_edges(
+    grafo,
+    posicoes,
+    edge_color='#4A4A4A',
+    arrows=True,
+    arrowsize=24,
+    width=2.0,
+    alpha=0.95,
+    connectionstyle='arc3,rad=0.08',
+    min_source_margin=12,
+    min_target_margin=14,
+    ax=eixo,
+)
+nx.draw_networkx_nodes(
+    grafo,
+    posicoes,
+    node_color=cores_nos,
+    node_size=2400,
+    alpha=0.88,
+    linewidths=1.2,
+    edgecolors='#FFFFFF',
+    ax=eixo,
+)
+nx.draw_networkx_labels(grafo, posicoes, font_size=8.5, font_weight='bold', ax=eixo)
+
+eixo.margins(0.18)
 
 eixo.set_title(
     'REDE BAYESIANA: QUALIDADE DO AR E SAUDE\nBaseada em dados reais de Nova York',

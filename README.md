@@ -13,7 +13,7 @@ RESUMO
 Este relatório técnico apresenta o desenvolvimento de uma Rede Bayesiana para
 analisar relações de dependência probabilística entre variáveis ambientais e de
 saúde extraídas do conjunto air_quality.csv. A rede foi estruturada com dados
-reais relacionados a tráfego veicular, dióxido de azoto, partículas finas,
+reais relacionados a tráfego veicular, dióxido de nitrogênio, partículas finas,
 ozônio, qualidade do ar, asma e hospitalizações respiratórias. A partir dessa
 modelagem, foram realizadas inferências probabilísticas que evidenciam a relação
 entre poluição atmosférica e agravamento de indicadores de saúde pública.
@@ -57,7 +57,7 @@ poluentes e impactos respiratórios.
 As variáveis utilizadas neste trabalho foram:
 
 - Trafego: volume de tráfego veicular.
-- DioxidoAzoto: concentração de dióxido de azoto (NO2).
+- DioxidoAzoto: concentração de dióxido de nitrogênio (NO2).
 - ParticulasFinas: concentração de material particulado fino (PM2.5).
 - Ozonio: concentração de ozônio (O3).
 - QualidadeDoAr: índice agregado de qualidade do ar.
@@ -115,7 +115,7 @@ como poluição elevada ou tráfego intenso.
 
 Variáveis (7 nós):
 - Trafego: volume de tráfego veicular (0=baixo, 1=médio, 2=alto)
-- DioxidoAzoto: dióxido de azoto / NO2 (0=baixo, 1=médio, 2=alto)
+- DioxidoAzoto: dióxido de nitrogênio / NO2 (0=baixo, 1=médio, 2=alto)
 - ParticulasFinas: material particulado fino / PM2.5 (0=baixo, 1=médio, 2=alto)
 - Ozonio: ozônio / O3 (0=baixo, 1=médio, 2=alto)
 - QualidadeDoAr: qualidade do ar (0=boa, 1=moderada, 2=ruim)
@@ -160,7 +160,7 @@ proposta.
 
 Principais resultados observados:
 
-1. O tráfego aparece como fonte relevante para dióxido de azoto e partículas finas.
+1. O tráfego aparece como fonte relevante para dióxido de nitrogênio e partículas finas.
 2. O ozônio foi incluído como variável adicional influenciando a qualidade do ar.
 3. A piora da qualidade do ar aumenta a probabilidade de asma e hospitalizações.
 4. As inferências indicam associação forte entre poluição elevada e agravamento

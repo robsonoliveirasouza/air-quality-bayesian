@@ -67,7 +67,7 @@ ESTRUTURA DA REDE BAYESIANA
 
 Variáveis (7 nós):
 - Trafego: Volume de tráfego veicular (0=baixo, 1=médio, 2=alto)
-- DioxidoAzoto: Dióxido de azoto / NO2 (0=baixo, 1=médio, 2=alto)
+- DioxidoAzoto: Dióxido de Nitrogênio / NO2 (0=baixo, 1=médio, 2=alto)
 - ParticulasFinas: Material particulado fino / PM2.5 (0=baixo, 1=médio, 2=alto)
 - Ozonio: O3 / ozônio (0=baixo, 1=médio, 2=alto)
 - QualidadeDoAr: Qualidade do ar (0=boa, 1=moderada, 2=ruim)
@@ -122,7 +122,7 @@ A rede bayesiana permite modelar com sucesso as relações de causalidade entre
 fatores observados no conjunto air_quality.csv e sua influência na saúde pública.
 As análises realizadas demonstram que:
 
-1. O tráfego está associado ao aumento de dióxido de azoto e partículas finas
+1. O tráfego está associado ao aumento de dióxido de nitrogênio e partículas finas
 2. O ozônio entra como variável adicional na explicação da qualidade do ar
 3. A piora da qualidade do ar aumenta a probabilidade de asma e internações
 4. A rede fornece um modelo viável para inferência probabilística com dados reais
